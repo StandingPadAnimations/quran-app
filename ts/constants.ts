@@ -40,7 +40,7 @@ const chapterLengths: { [key: number]: number } = {
   55: 79, 56: 97, 57: 30, 58: 23, 59: 25, 60: 14,
   61: 15, 62: 12, 63: 12, 64: 19, 65: 13, 66: 13,
   67: 31, 68: 53, 69: 53, 70: 45, 71: 29, 72: 29,
-  73: 21, 75: 57, 75: 41, 76: 32, 77: 51, 78: 41,
+  73: 21, 74: 57, 75: 41, 76: 32, 77: 51, 78: 41,
   79: 47, 80: 43, 81: 81, 82: 20, 83: 37, 84: 26,
   85: 23, 86: 18, 87: 20, 88: 27, 89: 31, 90: 21,
   91: 16, 92: 22, 93: 12, 94: 9, 95: 9, 96: 20,
@@ -58,4 +58,4 @@ export function chapterLength(chapter: number, countBismi: boolean): number {
 }
 
 // TODO: Make this changeable by the end user
-export const verseRange: number = 10;
+export const defaultVerseRange: number = 10;
