@@ -114,7 +114,7 @@ async function CVLoad(e: Event) {
 
   const selectedVerse = document.getElementsByClassName(`verse-${verseInput.value}`);
 
-  ["outline-2", "outline-offset-6", "outline-dark-main", "dark:outline-main"].forEach((cls) => {
+  ["outline-2", "outline-offset-10", "outline-dark-main", "dark:outline-main", "rounded"].forEach((cls) => {
     selectedVerse[0].classList.toggle(cls, true);
   })
 
