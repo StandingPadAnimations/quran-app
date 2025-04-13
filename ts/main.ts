@@ -19,6 +19,7 @@ import { readURLParams } from "./url.js";
 import { chapterLength, defaultVerseRange, updateVerseRange } from "./constants.js"; 
 import { decreaseFontSize, increaseFontSize } from "./customization.js";
 import { buildPage, focusVerse, rebuildVerses } from "./build-page.js";
+import { getFontSizeSettings, saveFontSizeSettings } from "./settings.js";
 
 function updateCSE(newChapter: number, newStart: number, verseRange: number, countBismi: boolean): [number, number, number] {
   const chapter = newChapter > 0 ? newChapter : 1;
@@ -29,9 +30,8 @@ function updateCSE(newChapter: number, newStart: number, verseRange: number, cou
 }
 
 let countBismi: boolean = true;
-let arabicFontSize: string = "4xl";
-let transFontSize: string = "xl";
 
+let [arabicFontSize, transFontSize] = getFontSizeSettings();
 let [chapter, verseBase, verseEnd, verseRange, focusedVerse] = readURLParams(countBismi);
 buildPage(chapter, verseBase, verseEnd, focusedVerse, arabicFontSize, transFontSize, countBismi);
 
@@ -76,18 +76,22 @@ document.querySelectorAll(".prevBtn").forEach((itm) => {
 
 document.getElementById("arabicFontDecr").addEventListener("click", () => {
   arabicFontSize = decreaseFontSize(arabicFontSize, 'arabic-verse');
+  saveFontSizeSettings(arabicFontSize, transFontSize);
 });
 
 document.getElementById("arabicFontIncr").addEventListener("click", () => {
   arabicFontSize = increaseFontSize(arabicFontSize, 'arabic-verse');
+  saveFontSizeSettings(arabicFontSize, transFontSize);
 });
 
 document.getElementById("transFontDecr").addEventListener("click", () => {
   transFontSize = decreaseFontSize(transFontSize, 'trans-verse');
+  saveFontSizeSettings(arabicFontSize, transFontSize);
 });
 
 document.getElementById("transFontIncr").addEventListener("click", () => {
   transFontSize = increaseFontSize(transFontSize, 'trans-verse');
+  saveFontSizeSettings(arabicFontSize, transFontSize);
 });
 
 const chapterInput = <HTMLInputElement>document.getElementById("chapter");
