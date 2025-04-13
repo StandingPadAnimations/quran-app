@@ -16,11 +16,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { readURLParams } from "./url.js";
-import { chapterLength, verseRange } from "./constants.js"; 
+import { chapterLength, defaultVerseRange } from "./constants.js"; 
 import { decreaseFontSize, increaseFontSize } from "./customization.js";
 import { buildPage, rebuildVerses } from "./build-page.js";
 
-function updateCSE(newChapter: number, newStart: number, countBismi: boolean): [number, number, number] {
+function updateCSE(newChapter: number, newStart: number, verseRange: number, countBismi: boolean): [number, number, number] {
   const chapter = newChapter > 0 ? newChapter : 1;
   const verseBase = newStart > 0 ? newStart : 1;
   const tmpEnd = verseBase + (verseRange - 1);
@@ -28,11 +28,20 @@ function updateCSE(newChapter: number, newStart: number, countBismi: boolean): [
   return [chapter, verseBase, verseEnd];
 }
 
+function updateVerseRange(): number {
+  const verseRangeInput = <HTMLInputElement>document.getElementById("verseRange");
+  if (verseRangeInput.value) {
+    return parseInt(verseRangeInput.value);
+  }
+  return defaultVerseRange;
+}
+
 let countBismi: boolean = true;
 let chapter: number = 1;
 let verseBase: number = 1;
 let arabicFontSize: string = "4xl";
 let transFontSize: string = "xl";
+let verseRange = updateVerseRange();
 
 const tmpEnd = verseBase + (verseRange - 1);
 let totalVerses: number = chapterLength(chapter, countBismi);
@@ -42,12 +51,13 @@ let verseEnd = (tmpEnd <= totalVerses) ? tmpEnd : totalVerses;
 buildPage(chapter, verseBase, verseEnd, arabicFontSize, transFontSize, countBismi);
 
 document.querySelectorAll(".nextBtn").forEach((itm) => {
-    itm.addEventListener("click", () => {
+  itm.addEventListener("click", () => {
+    verseRange = updateVerseRange();
     if (verseBase + verseRange <= chapterLength(chapter, countBismi)) {
-      [chapter, verseBase, verseEnd] = updateCSE(chapter, verseBase+verseRange, countBismi);
+      [chapter, verseBase, verseEnd] = updateCSE(chapter, verseBase+verseRange, verseRange, countBismi);
       rebuildVerses(chapter, verseBase, verseEnd, arabicFontSize, transFontSize, countBismi);
     } else {
-      [chapter, verseBase, verseEnd] = updateCSE(chapter+1, 1, countBismi);
+      [chapter, verseBase, verseEnd] = updateCSE(chapter+1, 1, verseRange, countBismi);
       buildPage(chapter, verseBase, verseEnd, arabicFontSize, transFontSize, countBismi);
     }
     window.scroll({
@@ -60,14 +70,15 @@ document.querySelectorAll(".nextBtn").forEach((itm) => {
 
 document.querySelectorAll(".prevBtn").forEach((itm) => {
   itm.addEventListener("click", () => {
+    verseRange = updateVerseRange();
     if (verseBase === 1) {
-      [chapter, verseBase, verseEnd] = updateCSE(chapter-1, verseBase, countBismi);
+      [chapter, verseBase, verseEnd] = updateCSE(chapter-1, verseBase, verseRange, countBismi);
       buildPage(chapter, verseBase, verseEnd, arabicFontSize, transFontSize, countBismi);
     } else if (verseBase - verseRange >= 1) {
-      [chapter, verseBase, verseEnd] = updateCSE(chapter, verseBase-verseRange, countBismi);
+      [chapter, verseBase, verseEnd] = updateCSE(chapter, verseBase-verseRange, verseRange, countBismi);
       rebuildVerses(chapter, verseBase, verseEnd, arabicFontSize, transFontSize, countBismi);
     } else {
-      [chapter, verseBase, verseEnd] = updateCSE(chapter, 1, countBismi);
+      [chapter, verseBase, verseEnd] = updateCSE(chapter, 1, verseRange, countBismi);
       rebuildVerses(chapter, verseBase, verseEnd, arabicFontSize, transFontSize, countBismi);
     }
     window.scroll({
@@ -102,12 +113,13 @@ form.addEventListener("submit", (e) => CVLoad(e));
 
 async function CVLoad(e: Event) {
   e.preventDefault();
+  verseRange = updateVerseRange();
   
   const withContext = <HTMLInputElement>document.getElementById("withContext");
   if (withContext.checked) {
-      [chapter, verseBase, verseEnd] = updateCSE(parseInt(chapterInput.value), parseInt(verseInput.value)-((verseRange/2)-1), countBismi);
+      [chapter, verseBase, verseEnd] = updateCSE(parseInt(chapterInput.value), parseInt(verseInput.value)-((verseRange/2)-1), verseRange, countBismi);
   } else {
-      [chapter, verseBase, verseEnd] = updateCSE(parseInt(chapterInput.value), parseInt(verseInput.value), countBismi);
+      [chapter, verseBase, verseEnd] = updateCSE(parseInt(chapterInput.value), parseInt(verseInput.value), verseRange, countBismi);
   }
 
   await buildPage(chapter, verseBase, verseEnd, arabicFontSize, transFontSize, countBismi);
