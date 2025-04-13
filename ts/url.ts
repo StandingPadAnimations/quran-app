@@ -15,18 +15,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import { chapterLength } from "./constants.js";
+import { chapterLength, defaultVerseRange, updateVerseRange } from "./constants.js";
 
-export function readURLParams(verseRange: number, countBismi: boolean): [number, number, number] {
+export function readURLParams(countBismi: boolean): [number, number, number, number, number] {
   const params = new URLSearchParams(window.location.search);
+  const verseRange = parseInt(params.get("range")) || defaultVerseRange;
   const chapter = parseInt(params.get("chapter")) || 1;
   const verseBase = parseInt(params.get("start")) || 1;
 
   const tmpEnd = verseBase + (verseRange - 1);
   const totalVerses = chapterLength(chapter, countBismi);
   const verseEnd: number = parseInt(params.get("end")) || (tmpEnd <= totalVerses) ? tmpEnd : totalVerses;
+  const focusedVerse: number = parseInt(params.get("focusedVerse")) || -1;
 
-  return [chapter, verseBase, verseEnd]
+  return [chapter, verseBase, verseEnd, verseRange, focusedVerse]
 }
 
 export function updateURL(chapter: number, verseBase: number, verseEnd: number, countBismi: boolean) {
@@ -34,5 +36,12 @@ export function updateURL(chapter: number, verseBase: number, verseEnd: number, 
   url.searchParams.set("chapter", chapter.toString());
   url.searchParams.set("start", verseBase.toString());
   url.searchParams.set("end", (verseEnd <= chapterLength(chapter, countBismi) ? verseEnd : chapterLength(chapter, countBismi)).toString());
+  url.searchParams.set("range", updateVerseRange().toString());
+  window.history.pushState({}, "", url);
+}
+
+export function setFocusedVerse(focusedVerse: number) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("focusedVerse", focusedVerse.toString());
   window.history.pushState({}, "", url);
 }

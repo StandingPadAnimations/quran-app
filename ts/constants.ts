@@ -57,5 +57,14 @@ export function chapterLength(chapter: number, countBismi: boolean): number {
   return chapterLengths[chapter]
 }
 
-// TODO: Make this changeable by the end user
 export const defaultVerseRange: number = 10;
+
+export function updateVerseRange(): number {
+  const verseRangeInput = <HTMLInputElement>document.getElementById("verseRange");
+  if (verseRangeInput.value) {
+    return parseInt(verseRangeInput.value);
+  }
+  const params = new URLSearchParams(window.location.search);
+  return (parseInt(params.get("range")) || defaultVerseRange);
+}
+

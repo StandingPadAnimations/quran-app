@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import { LanguageOptions, VerseResponse } from "./api.js";
-import { updateURL } from "./url.js";
+import { setFocusedVerse, updateURL } from "./url.js";
 import { getChapterIntro, getVerses } from "./api.js";
 import { chapterLength, languageToName } from "./constants.js";
 
@@ -51,7 +51,7 @@ function buildChapterIntro(intro, chapter: number, verseBase: number, verseEnd: 
   chapterBody?.appendChild(introFragment);
 }
 
-function buildVerses(verses: VerseResponse, arabicFontSize: string, transFontSize: string, countBismi: boolean) {
+function buildVerses(verses: VerseResponse, arabicFontSize: string, transFontSize: string, countBismi: boolean, focusedVerse: number) {
   const verseBody = document.getElementById("verse-body");
 
   // Clear old content
@@ -87,9 +87,13 @@ function buildVerses(verses: VerseResponse, arabicFontSize: string, transFontSiz
   });
   
   verseBody?.appendChild(verseFragment);
+
+  if (focusedVerse > 0) {
+    focusVerse(focusedVerse);
+  }
 }
 
-export async function buildPage(chapter: number, verseBase: number, verseEnd: number, arabicFontSize: string, transFontSize: string, countBismi: boolean) {
+export async function buildPage(chapter: number, verseBase: number, verseEnd: number, focusedVerse: number, arabicFontSize: string, transFontSize: string, countBismi: boolean) {
   updateURL(chapter, verseBase, verseEnd, countBismi);
 
   const [intro, verses] = await Promise.all([
@@ -98,15 +102,26 @@ export async function buildPage(chapter: number, verseBase: number, verseEnd: nu
   ])
 
   buildChapterIntro(intro, chapter, verseBase, verseEnd, countBismi);
-  buildVerses(verses.reduce((acc, val) => acc.concat(val), []), arabicFontSize, transFontSize, countBismi);
+  buildVerses(verses.reduce((acc, val) => acc.concat(val), []), arabicFontSize, transFontSize, countBismi, focusedVerse);
 }
 
-export async function rebuildVerses(chapter: number, verseBase: number, verseEnd: number, arabicFontSize: string, transFontSize: string, countBismi: boolean) {
+export async function rebuildVerses(chapter: number, verseBase: number, verseEnd: number, focusedVerse: number, arabicFontSize: string, transFontSize: string, countBismi: boolean) {
   updateURL(chapter, verseBase, verseEnd, countBismi);
   
   const chapterVerseRange = document.getElementById("chapterVerseRange");
   chapterVerseRange.textContent = `Verses ${verseBase}-${verseEnd <= chapterLength(chapter, countBismi) ? verseEnd : chapterLength(chapter, countBismi)}`;
   
   const verses = await getVerses(chapter, verseBase, (verseEnd <= chapterLength(chapter, countBismi) ? verseEnd : chapterLength(chapter, countBismi)), activeLanguages);
-  buildVerses(verses.reduce((acc, val) => acc.concat(val), []), arabicFontSize, transFontSize, countBismi);
+  buildVerses(verses.reduce((acc, val) => acc.concat(val), []), arabicFontSize, transFontSize, countBismi, focusedVerse);
+}
+
+export function focusVerse(verse: number) {
+  const selectedVerse = document.getElementsByClassName(`verse-${verse}`);
+
+  ["outline-2", "outline-offset-10", "outline-dark-main", "dark:outline-main", "rounded"].forEach((cls) => {
+    selectedVerse[0].classList.toggle(cls, true);
+  })
+
+  selectedVerse[0].scrollIntoView({ behavior: "smooth", block: "center"});
+  setFocusedVerse(verse);
 }
