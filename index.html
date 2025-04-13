@@ -1,0 +1,220 @@
+<!--
+Copyright (C) 2025 Mahid Sheikh
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quran Reader</title>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/globals-compiled.css">
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js"></script>
+  </head>
+  <body class="bg-main dark:bg-dark-main">
+    <!-- Chapter body with name, verse numbers, and intro-->
+    <div id="chapter-body" class="prose dark:prose-invert max-w-none text-text-main dark:text-dark-text-main bg-secondary dark:bg-dark-secondary m-8 rounded-lg p-6"></div>
+    
+    <!-- Previous and Next buttons -->
+    <div class="flex flex-row justify-center items-center m-8 mt-4">
+      <button class="prevBtn
+              text-text-main 
+              dark:text-dark-text-main 
+              bg-secondary 
+              dark:bg-dark-secondary
+              focus:outline-2 
+              focus:outline-offset-2 
+              focus:outline-secondary 
+              active:bg-main
+              dark:focus:outline-dark-secondary
+              dark:active:bg-dark-main
+              font-bold 
+              py-2 
+              px-4 
+              m-3 
+              rounded"
+      >Previous</button>
+      <button class="nextBtn
+              text-text-main 
+              dark:text-dark-text-main 
+              bg-secondary 
+              dark:bg-dark-secondary
+              focus:outline-2 
+              focus:outline-offset-2 
+              focus:outline-secondary 
+              active:bg-main
+              dark:focus:outline-dark-secondary
+              dark:active:bg-dark-main
+              font-bold 
+              py-2 
+              px-4 
+              m-3 
+              rounded"
+      >Next</button>
+
+      <!-- Chapter and Verse Selection -->
+      <form id="cv_selection" class="m-8">
+        <div class="m-3">
+          <div class="flex items-center rounded-md bg-secondary dark:bg-dark-secondary has-[input:focus-within]:bg-main dark:has-[input:focus-within]:bg-dark-main pl-3 has-[input:focus-within]:outline-1 -outline-offset-1 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-secondary dark:has-[input:focus-within]:outline-dark-secondary">
+            <input type="number" name="chapter" id="chapter" class="block min-w-0 grow py-1.5 pr-3 pl-1 font-bold text-text-main dark:text-dark-text-main placeholder:text-text-secondary dark:placeholder:text-dark-text-secondary placeholder:font-bold focus:outline-none sm:text-sm/6" placeholder="Chapter Number" required>
+          </div>
+        </div>
+        <div class="m-3">
+          <div class="flex items-center rounded-md bg-secondary dark:bg-dark-secondary has-[input:focus-within]:bg-main dark:has-[input:focus-within]:bg-dark-main pl-3 has-[input:focus-within]:outline-1 -outline-offset-1 has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-secondary dark:has-[input:focus-within]:outline-dark-secondary">
+            <input type="number" name="verse" id="verse" class="block min-w-0 grow py-1.5 pr-3 pl-1 font-bold text-text-main dark:text-dark-text-main placeholder:text-text-secondary dark:placeholder:text-dark-text-secondary placeholder:font-bold focus:outline-none sm:text-sm/6" placeholder="Verse Number" required>
+          </div>
+        </div>
+        <input type="submit" hidden />
+      </form>
+      <input type="checkbox" id="withContext" name="With Context" />
+      <label for="withContext" class="text-text-main dark:text-dark-text-main m-2">With Context</label>
+    </div>
+
+    <!-- Settings -->
+    <details class="text-text-main dark:text-dark-text-main bg-secondary dark:bg-dark-secondary rounded-lg m-8 p-6">
+      <summary>Settings</summary>
+      <div class="flex flex-row justify-center items-center m-8 mt-4">
+        <!-- Arabic Font size -->
+        <div class="flex flex-col items-center justify-center">
+          <div class="text-text-main dark:text-dark-text-main">Arabic Font Size</div>
+          <div class="flex flex-row justify-center items-center m-2 mt-4">
+            <button id="arabicFontDecr" 
+              class="text-text-main 
+                    dark:text-dark-text-main 
+                    bg-main 
+                    dark:bg-dark-main
+                    focus:outline-2 
+                    focus:outline-offset-2 
+                    focus:outline-main 
+                    active:bg-secondary
+                    dark:focus:outline-dark-main 
+                    dark:active:bg-dark-secondary
+                    font-bold 
+                    py-2 
+                    px-4 
+                    mx-3 
+                    rounded"
+            >-</button>
+            <button id="arabicFontIncr" 
+              class="text-text-main 
+                    dark:text-dark-text-main
+                    bg-secondary 
+                    dark:bg-dark-main
+                    focus:outline-2 
+                    focus:outline-offset-2 
+                    focus:outline-main 
+                    active:bg-secondary
+                    dark:focus:outline-dark-main 
+                    dark:active:bg-dark-secondary
+                    font-bold 
+                    py-2 
+                    px-4 
+                    mx-3 
+                    rounded"
+            >+</button>
+          </div>
+        </div>
+
+        <!-- Translation font size -->
+        <div class="flex flex-col items-center justify-center">
+          <div class="text-text-main dark:text-dark-text-main">Translation Font Size</div>
+          <div class="flex flex-row justify-center items-center m-2 mt-4">
+            <button id="transFontDecr" 
+              class="text-text-main 
+                    dark:text-dark-text-main 
+                    bg-main 
+                    dark:bg-dark-main
+                    focus:outline-2 
+                    focus:outline-offset-2 
+                    focus:outline-main 
+                    active:bg-secondary
+                    dark:focus:outline-dark-main 
+                    dark:active:bg-dark-secondary
+                    font-bold 
+                    py-2 
+                    px-4 
+                    mx-3 
+                    rounded"
+            >-</button>
+            <button id="transFontIncr" 
+              class="text-text-main 
+                    dark:text-dark-text-main
+                    bg-secondary 
+                    dark:bg-dark-main
+                    focus:outline-2 
+                    focus:outline-offset-2 
+                    focus:outline-main 
+                    active:bg-secondary
+                    dark:focus:outline-dark-main 
+                    dark:active:bg-dark-secondary
+                    font-bold 
+                    py-2 
+                    px-4 
+                    mx-3 
+                    rounded"
+            >+</button>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Verse body -->
+    <div id="verse-body" class="text-text-main dark:text-dark-text-main bg-secondary dark:bg-dark-secondary m-8 mb-4 rounded-lg p-6"></div>
+
+    <!-- Previous and Next buttons -->
+    <div class="flex flex-row justify-center items-center m-8 mt-4">
+      <button class="prevBtn
+              text-text-main 
+              dark:text-dark-text-main 
+              bg-secondary 
+              dark:bg-dark-secondary
+              focus:outline-2 
+              focus:outline-offset-2 
+              focus:outline-secondary 
+              active:bg-main
+              dark:focus:outline-dark-secondary
+              dark:active:bg-dark-main
+              font-bold 
+              py-2 
+              px-4 
+              m-3 
+              rounded"
+      >Previous</button>
+      <button class="nextBtn
+              text-text-main 
+              dark:text-dark-text-main 
+              bg-secondary 
+              dark:bg-dark-secondary
+              focus:outline-2 
+              focus:outline-offset-2 
+              focus:outline-secondary 
+              active:bg-main
+              dark:focus:outline-dark-secondary
+              dark:active:bg-dark-main
+              font-bold 
+              py-2 
+              px-4 
+              m-3 
+              rounded"
+      >Next</button>
+    </div>
+
+    <!-- Main script that populates the HTML -->
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>
+

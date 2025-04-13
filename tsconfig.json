@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2017"],
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outDir": "js",
+    "target": "es6",
+    "module": "es6",
+  },
+  "include": ["ts/*"],
+  "exclude": ["**/*.spec.ts"]
+}
